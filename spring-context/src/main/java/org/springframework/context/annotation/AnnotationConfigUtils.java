@@ -128,6 +128,7 @@ public class AnnotationConfigUtils {
 
 	/**
 	 * Register all relevant annotation post processors in the given registry.
+	 * 在给定注册表中注册所有相关的注释后置处理器
 	 * @param registry the registry to operate on
 	 */
 	public static void registerAnnotationConfigProcessors(BeanDefinitionRegistry registry) {
@@ -144,7 +145,7 @@ public class AnnotationConfigUtils {
 	 */
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		//得到DefaultListableBeanFactory
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
@@ -154,14 +155,23 @@ public class AnnotationConfigUtils {
 				beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
 			}
 		}
-
+		//BeanDefinitionHolder Bean容器
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
+		/**
+		 * 注册Spring内置的多个Bean
+		 *
+		 * 1、判断容器中是否存在该Bean
+		 * 2、不存在 就调用RootBeanDefinition 产生当前实例Bean
+		 */
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
 			//beanDefs 将spring传统的配置类 添加进去
 			//registerPostProcessor() 注册bean
+			//注册到AnnotationConfigApplicationContext 容器中去
+			//BeanDefinition 用来描述Bean的，里面存放着关于Bean的一系列信息，
+			//比如Bean的作用域 Bean所对应的Class 是否懒加载等等 十分重要
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
