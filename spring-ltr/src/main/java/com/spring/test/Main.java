@@ -14,7 +14,6 @@ public class Main {
 		//		AnnotationConfigApplicationContext 初始化spring的环境类
 		AnnotationConfigApplicationContext context =
 				new AnnotationConfigApplicationContext(AppConfig.class);
-
 		//包扫描的时候会创建一个BeanDefinition对象 存储bean的各种信息 (类名)
 //		BeanDefinition beanDefinition = new GenericBeanDefinition();
 //		beanDefinition.setBeanClassName("cityService");

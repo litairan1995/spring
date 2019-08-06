@@ -109,14 +109,40 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			/**
+			 * 获取实现了BeanDefinitionRegistryPostProcessor 接口的实现类 的beanName
+			 * BeanName：org.springframework.context.annotation
+			 * .internalConfigurationAnnotationProcessor 并且装入数组
+			 * 这里spring还没有开始扫描 扫描是在ConfigurationClassPostProcessor类中完成的
+			 */
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+					/**
+					 * 获得ConfigurationClassPostProcessor类
+					 * 并且放到currentRegistryProcessors
+					 * ConfigurationClassPostProcessor 是很重要的类
+					 * 它实现了BeanDefinitionRegistryPostProcessor接口
+					 * BeanDefinitionRegistryPostProcessor 接口 又扩展了
+					 * BeanFactoryPostProcessor接口
+					 * ConfigurationClassPostProcessor 极其重要的类
+					 * 里面执行了扫描Bean Import ImportResource 等各种操作 用来处理配置类
+					 * 有两种情况
+					 * 1、传统意义上的配置类
+					 * 2、一种是普通的bean
+					 * 的各种逻辑
+					 */
 					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+					/**
+					 * 把name放到processedBeans 后溪根据这个集合来判断处理器是否已经被执行过了
+					 */
 					processedBeans.add(ppName);
 				}
 			}
+			/**
+			 * 处理排序
+			 */
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);

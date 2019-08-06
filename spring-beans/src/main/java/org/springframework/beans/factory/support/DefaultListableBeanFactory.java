@@ -850,6 +850,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else {
 				// Still in startup registration phase
+				//完成对自定义bean的注册
 				//beanDefinitionMap<> 是 map<String,BeanDefinition>
 				//就是把beanName作为key beanDefinition 作为值 存入到map集合中去
 				this.beanDefinitionMap.put(beanName, beanDefinition);
