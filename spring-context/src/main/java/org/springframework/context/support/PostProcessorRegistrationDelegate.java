@@ -48,18 +48,41 @@ import org.springframework.lang.Nullable;
  */
 final class PostProcessorRegistrationDelegate {
 
+	/**
+	 *
+	 * @param beanFactory DefaultListableBeanFactory
+	 * @param beanFactoryPostProcessors 手动添加的后置处理器 而不是spring扫描的
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
-
+		/**
+		 * beanFactory == DefaultListableBeanFactory 是 BeanDefinitionRegistry
+		 * 的实现类
+		 */
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			//常规的后置处理器 用来存放实现了 BeanFactoryPostProcessor 的后置处理器
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			//注册后置处理器 用来存放实现了BeanDefinitionRegistryPostProcessor
+			//BeanDefinitionRegistryPostProcessor 扩展了
+			// BeanFactoryPostProcessor 接口
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
-
+			//循环传进来的 BeanFactoryPostProcessors 正常情况下
+			// BeanFactoryPostProcessors 是没有数据的 因为BeanFactoryPostProcessors
+			// 是获取手动添加进去的后置处理器 而不是spring扫描的
+			// 只有手动调用
+			// annotationConfigApplicationContext.addBeanFactoryPostProcessor(XX)才会有数据
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+				/**
+				 * 判断postProcessor 是不是 BeanDefinitionRegistryPostProcessor
+				 * 因为BeanDefinitionRegistryPostProcessor
+				 * 扩展了BeanFactoryPostProcessor
+				 * 是则直接执行postProcessBeanDefinitionRegistry()方法
+				 * 然后把对象装到registryProcessors 集合中去
+				 */
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
@@ -67,6 +90,9 @@ final class PostProcessorRegistrationDelegate {
 					registryProcessors.add(registryProcessor);
 				}
 				else {
+					/**
+					 * 不是就装到regularPostProcessors集合中去
+					 */
 					regularPostProcessors.add(postProcessor);
 				}
 			}
@@ -75,6 +101,11 @@ final class PostProcessorRegistrationDelegate {
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
+			/**
+			 * 不在这里初始化FactoryBean 先让手动添加的后置处理器处理这些bean
+			 * 实现排序
+			 */
+			//临时变量 用来装载BeanDefinitionRegistryPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
