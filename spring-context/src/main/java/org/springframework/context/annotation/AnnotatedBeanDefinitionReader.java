@@ -224,7 +224,7 @@ public class AnnotatedBeanDefinitionReader {
 	 *                              factory's {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
 	 * @since 5.0
 	 * <p>
-	 * 读取注解的bean 并注册到BeanDefinition集合中
+	 * 读取注解的bean 配置类 并注册到BeanDefinition集合中
 	 */
 	<T> void doRegisterBean(Class<T> annotatedClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 							@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
@@ -233,7 +233,7 @@ public class AnnotatedBeanDefinitionReader {
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);
 		//getMetadata()方法 可以拿到类上的注解
 		//判断注解是否需要跳过
-		//判断是否要跳过注解，spring中有一个@Condition注解 当不满足条件，这个bean就不会被解析
+		//判断是否要跳过注解，spring中有一个@Condition注解 当满足条件，这个bean就不会被解析
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}

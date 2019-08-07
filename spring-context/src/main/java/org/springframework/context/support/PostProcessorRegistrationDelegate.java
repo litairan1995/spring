@@ -135,13 +135,13 @@ final class PostProcessorRegistrationDelegate {
 					 */
 					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
 					/**
-					 * 把name放到processedBeans 后溪根据这个集合来判断处理器是否已经被执行过了
+					 * 把后置处理器的beanName放到processedBeans 后续根据这个集合来判断后置处理器是否已经被执行过了
 					 */
 					processedBeans.add(ppName);
 				}
 			}
 			/**
-			 * 处理排序
+			 * 处理排序 对后置处理器进行排序 并将排好序的后置处理器 添加到registryProcessors 集合中去
 			 */
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);

@@ -228,6 +228,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			throw new IllegalStateException(
 					"postProcessBeanFactory already called on this post-processor against " + registry);
 		}
+		/**
+		 * 将实现了
+		 */
 		this.registriesPostProcessed.add(registryId);
 
 		processConfigBeanDefinitions(registry);
